@@ -1,5 +1,4 @@
 import 'dart:io';
-
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,80 +10,77 @@ import '../services/auth_services.dart';
 import '../services/firestore_service.dart';
 
 class RegisterController extends GetxController {
-  RxBool isPassword = true.obs;
-  RxBool isCPassword = true.obs;
   File? image;
+  RxBool isPassword = true.obs;
+  RxBool isConfirmPassword = true.obs;
 
-  void changeVisibilityPassword() {
+  void changePasswordVisibilty() {
     isPassword.value = !isPassword.value;
   }
 
-  void changeVisibilityCPassword() {
-    isCPassword.value = !isCPassword.value;
+  void changeConfirmPasswordVisibilty() {
+    isConfirmPassword.value = !isConfirmPassword.value;
   }
 
-  Future<void> registerNewUser({
-    required String userName,
-    required String email,
-    required String password,
-    required String image,
-  }) async {
-    String msg = await AuthService.authService.registerUser(
+  Future<void> register(
+      {required String email,
+      required String password,
+      required String image,
+      required String userName}) async {
+    String? msg = await FirebaseAuthService.auth.creatUser(
       email: email,
       password: password,
     );
 
-    if (msg == 'Success') {
+    if (msg == "Success") {
       Get.back();
 
-      FireStoreService.fireStoreService.addUser(
-        user: UserModel(
-          uid: AuthService.authService.currentUser?.uid ?? "",
+      FirestoreService.fireStoreService.addUser(
+        modal: UserModal(
+          uid: FirebaseAuthService.auth.checkUserStatus?.uid ?? '',
           name: userName,
           email: email,
           password: password,
           image: image,
-          token: await FirebaseMessaging.instance.getToken() ?? "",
+          token: await FirebaseMessaging.instance.getToken(),
         ),
       );
 
       toastification.show(
-        title: const Text("Success"),
-        description: const Text(
-          "register success.. 😪",
-        ),
-        autoCloseDuration: const Duration(
-          seconds: 3,
-        ),
+        title: Text("Success"),
+        autoCloseDuration: Duration(seconds: 3),
+        description: Text("You register successfully"),
         type: ToastificationType.success,
-        style: ToastificationStyle.minimal,
       );
+
+      Get.back();
     } else {
       toastification.show(
-        title: const Text("Register Failed"),
-        description: Text(
-          msg,
-        ),
-        autoCloseDuration: const Duration(
-          seconds: 3,
-        ),
+        title: Text("Failed"),
+        autoCloseDuration: Duration(seconds: 3),
+        description: Text(msg!),
         type: ToastificationType.error,
-        style: ToastificationStyle.minimal,
       );
     }
   }
 
-  Future<void> pickUserImage() async {
+  Future<void> pickGalleryImage() async {
     ImagePicker picker = ImagePicker();
-
-    XFile? xFile = await picker.pickImage(
-      source: ImageSource.camera,
-    );
-
-    if (xFile != null) {
-      image = File(xFile.path);
+    XFile? file = await picker.pickImage(source: ImageSource.gallery);
+    if (file != null) {
+      image = File(file.path);
+      Get.back();
     }
+    update();
+  }
 
+  Future<void> pickCameraImage() async {
+    ImagePicker picker = ImagePicker();
+    XFile? file = await picker.pickImage(source: ImageSource.camera);
+    if (file != null) {
+      image = File(file.path);
+      Get.back();
+    }
     update();
   }
 }

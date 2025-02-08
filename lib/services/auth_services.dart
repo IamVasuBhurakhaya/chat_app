@@ -1,109 +1,100 @@
-import 'dart:developer';
-
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-class AuthService {
-  // Private Named Constructor
-  AuthService._();
+class FirebaseAuthService {
+  FirebaseAuthService._();
+  static FirebaseAuthService auth = FirebaseAuthService._();
 
-  // Singleton Object
-  static AuthService authService = AuthService._();
-
-  FirebaseAuth auth = FirebaseAuth.instance;
+  FirebaseAuth authentication = FirebaseAuth.instance;
   GoogleSignIn googleSignIn = GoogleSignIn();
 
-  // Todo: User Register Method
-  Future<String> registerUser({
-    required String email,
-    required String password,
-  }) async {
+  //creating user
+  Future<String?> creatUser(
+      {required String email, required String password}) async {
     String msg;
     try {
-      await auth.createUserWithEmailAndPassword(
+      await authentication.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
+
       msg = "Success";
     } on FirebaseAuthException catch (e) {
-      log("Sign Up : ${e.code}");
       switch (e.code) {
         case 'operation-not-allowed':
-          msg = 'try another way to login';
+          msg = 'this service not available';
         case 'week-password':
-          msg = "password is week 🔒";
-        case 'email-already-in-use':
-          msg = "email already exits...";
+          msg = "Your password is too week";
         default:
           msg = e.code;
       }
     }
-
     return msg;
+    // return userCredential.user;
   }
 
-  // Todo: User Login Method
-  Future<String> loginUser({
-    required String email,
-    required String password,
-  }) async {
+  //Login user
+  Future<String> loginUser(
+      {required String email, required String password}) async {
     String msg;
     try {
-      await auth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-
+      await authentication.signInWithEmailAndPassword(
+          email: email, password: password);
       msg = "Success";
     } on FirebaseAuthException catch (e) {
-      log("Exception : ${e.code}");
-
       switch (e.code) {
         case 'invalid-credential':
-          msg = "email or password is invalid";
+          msg = "Invalid credential";
         case 'operation-not-allowed':
-          msg = 'try another way to login';
+          msg = "This service no more";
         default:
           msg = e.code;
       }
     }
-
     return msg;
   }
 
-// Todo: Login With Google Method
-  Future<String> loginWithGoogle() async {
+  //Anonymously Login
+  Future<User?> anonymouslyLogin() async {
+    UserCredential userCredential = await authentication.signInAnonymously();
+    return userCredential.user;
+  }
+
+  //Google Login
+  Future<String> googleLogin() async {
     String msg;
+
     try {
-      GoogleSignInAccount? googleUsers = await googleSignIn.signIn();
+      GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
-      if (googleUsers != null) {
-        GoogleSignInAuthentication googleAuth =
-            await googleUsers.authentication;
+      if (googleUser != null) {
+        GoogleSignInAuthentication googleAuth = await googleUser.authentication;
 
-        var credential = GoogleAuthProvider.credential(
+        OAuthCredential credential = GoogleAuthProvider.credential(
           idToken: googleAuth.idToken,
           accessToken: googleAuth.accessToken,
         );
 
-        await auth.signInWithCredential(credential);
+        await authentication.signInWithCredential(credential);
 
         msg = "Success";
       } else {
-        msg = "Not Google Account !!!";
+        msg = "No google Account";
       }
     } on FirebaseAuthException catch (e) {
       msg = e.code;
     }
+
     return msg;
   }
 
-// Todo: LogOut Method
-  Future<void> logOut() async {
-    await auth.signOut();
+  //Check user Login
+  User? get checkUserStatus => authentication.currentUser;
+
+  //Logout
+  Future<void> logoutUser() async {
+    await authentication.signOut();
     await googleSignIn.signOut();
   }
-
-// Get Current User
-  User? get currentUser => auth.currentUser;
 }

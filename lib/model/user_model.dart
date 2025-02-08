@@ -1,12 +1,7 @@
-class UserModel {
-  String uid;
-  String name;
-  String email;
-  String password;
-  String image;
-  String token;
+class UserModal {
+  String? uid, name, email, password, image, token;
 
-  UserModel({
+  UserModal({
     required this.uid,
     required this.name,
     required this.email,
@@ -15,14 +10,16 @@ class UserModel {
     required this.token,
   });
 
-  factory UserModel.fromMap({required Map<String, dynamic> data}) => UserModel(
-        uid: data['uid'],
-        name: data['name'],
-        email: data['email'],
-        password: data['password'],
-        image: data['image'],
-        token: data['token'],
-      );
+  factory UserModal.fromMap(Map m1) {
+    return UserModal(
+      uid: m1['uid'],
+      name: m1['name'],
+      email: m1['email'],
+      password: m1['password'],
+      image: m1['image'],
+      token: m1['token'],
+    );
+  }
 
   Map<String, dynamic> get toMap => {
         'uid': uid,

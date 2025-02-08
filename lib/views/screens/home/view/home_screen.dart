@@ -1,53 +1,22 @@
-import 'dart:developer';
-
+import 'package:chat_app/controller/home_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
-import '../../../../controller/home_controller.dart';
 import '../../../../model/user_model.dart';
 import '../../../../routes/routes.dart';
 import '../../../../services/firestore_service.dart';
 
-class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
 
   @override
-  State<HomeScreen> createState() => _HomeScreenState();
+  State<HomePage> createState() => _HomePageState();
 }
 
-class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
+class _HomePageState extends State<HomePage> {
   HomeController controller = Get.put(HomeController());
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addObserver(this);
-  }
-
-  @override
-  void didChangeAppLifecycleState(AppLifecycleState state) {
-    super.didChangeAppLifecycleState(state);
-
-    log("--------------------------");
-    // log("State : $state");
-
-    if (state == AppLifecycleState.resumed) {
-      log("Resumed State......");
-    } else if (state == AppLifecycleState.inactive) {
-      log("Inactive State......");
-    } else if (state == AppLifecycleState.hidden) {
-      log("Hidden State......");
-    } else if (state == AppLifecycleState.paused) {
-      log("Paused State......");
-    }
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    WidgetsBinding.instance.removeObserver(this);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -56,87 +25,112 @@ class _HomeScreenState extends State<HomeScreen> with WidgetsBindingObserver {
         child: Column(
           children: [
             FutureBuilder(
-              future: FireStoreService.fireStoreService.fetchSingleUser(),
+              future: FirestoreService.fireStoreService.fetchSingleUser(),
               builder: (context, snapshot) {
                 if (snapshot.hasError) {
-                  return Center(
-                    child: Text("Error : ${snapshot.error}"),
-                  );
+                  return Text("ERROR : ${snapshot.error}");
                 } else if (snapshot.hasData) {
-                  DocumentSnapshot<Map<String, dynamic>>? data = snapshot.data;
+                  var data = snapshot.data;
 
-                  // Map<String, dynamic> userData = data?.data() ?? {};
-
-                  UserModel user = UserModel.fromMap(data: data?.data() ?? {});
+                  UserModal modal = UserModal.fromMap(data?.data() ?? {});
 
                   return UserAccountsDrawerHeader(
-                    accountName: Text(user.name),
-                    accountEmail: Text(user.email),
                     currentAccountPicture: CircleAvatar(
-                      backgroundImage: NetworkImage(user.image),
+                      foregroundImage: NetworkImage(modal.image!),
                     ),
+                    accountName: Text(modal.name!),
+                    accountEmail: Text(modal.email!),
                   );
                 }
+
                 return Container();
               },
             ),
             ListTile(
               onTap: () {
-                controller.signOut();
-                Get.offNamed(Routes.login);
+                controller.logOut();
               },
-              leading: const Icon(Icons.logout),
-              title: const Text("Log Out"),
-            )
+              leading: Icon(Icons.logout_rounded),
+              title: Text("Log Out"),
+            ),
           ],
         ),
       ),
       appBar: AppBar(
-        centerTitle: true,
-        title: const Text("Home Page"),
+        toolbarHeight: 100,
+        backgroundColor: Colors.blue,
+        bottom: PreferredSize(
+          preferredSize: Size.fromHeight(01),
+          child: Container(
+            decoration: BoxDecoration(
+              border: Border.all(
+                width: 1.5,
+                color: Colors.black,
+              ),
+            ),
+          ),
+        ),
+        title: Text(
+          "Chat",
+          style: TextStyle(
+              fontSize: 26.sp,
+              fontWeight: FontWeight.bold,
+              color: Colors.white),
+        ),
       ),
-      body: StreamBuilder(
-        stream: FireStoreService.fireStoreService.fetchUsers(),
-        builder: (context, snapShot) {
-          if (snapShot.hasError) {
-            return Center(
-              child: Text("Error : ${snapShot.error}"),
-            );
-          } else if (snapShot.hasData) {
-            QuerySnapshot<Map<String, dynamic>>? data = snapShot.data;
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: StreamBuilder(
+          stream: FirestoreService.fireStoreService.fetchUsers(),
+          builder: (context, snapshot) {
+            if (snapshot.hasError) {
+              return Center(
+                child: CircularProgressIndicator(),
+              );
+            } else if (snapshot.hasData) {
+              var data = snapshot.data;
 
-            List<QueryDocumentSnapshot<Map<String, dynamic>>> allDocs =
-                data?.docs ?? [];
+              List<QueryDocumentSnapshot<Map<String, dynamic>>>? allDocs =
+                  data?.docs ?? [];
+              List<UserModal> userData = allDocs
+                  .map(
+                    (e) => UserModal.fromMap(e.data()),
+                  )
+                  .toList();
 
-            List<UserModel> allUsers = allDocs
-                .map(
-                  (e) => UserModel.fromMap(data: e.data()),
-                )
-                .toList();
-
-            return ListView.builder(
-                itemCount: allUsers.length,
+              return ListView.builder(
+                itemCount: userData.length,
                 itemBuilder: (context, index) {
-                  var user = allUsers[index];
+                  var usersInfo = userData[index];
 
-                  return Card(
-                    child: ListTile(
-                      onTap: () {
-                        Get.toNamed(Routes.chat, arguments: user);
-                      },
-                      leading: CircleAvatar(
-                        backgroundImage: NetworkImage(user.image),
+                  return Column(
+                    children: [
+                      ListTile(
+                        onTap: () {
+                          Get.toNamed(AppRoutes.chat, arguments: usersInfo);
+                        },
+                        leading: CircleAvatar(
+                          foregroundImage: NetworkImage(usersInfo.image ?? ''),
+                        ),
+                        title: Text(
+                          "${usersInfo.name}",
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
-                      title: Text(user.name),
-                      subtitle: Text(user.email),
-                    ),
+                      Divider(),
+                    ],
                   );
-                });
-          }
-          return const Center(
-            child: CircularProgressIndicator(),
-          );
-        },
+                },
+              );
+            }
+            return Center(
+              child: CircularProgressIndicator(),
+            );
+          },
+        ),
       ),
     );
   }

@@ -7,7 +7,6 @@ import 'package:http/http.dart' as http;
 
 class FCMService {
   FCMService._();
-
   static FCMService fcmService = FCMService._();
 
   Future<String> getAccessToken() async {
@@ -15,13 +14,13 @@ class FCMService {
 
     String json = await rootBundle.loadString(jsonPath);
 
-    var accountCredential = ServiceAccountCredentials.fromJson(json);
-
+    var accCredential = ServiceAccountCredentials.fromJson(json);
     List<String> scopes = [
-      "https://www.googleapis.com/auth/firebase.messaging"
+      //from google cloud api
+      "https://www.googleapis.com/auth/firebase.messaging",
     ];
 
-    var accessToken = await clientViaServiceAccount(accountCredential, scopes);
+    var accessToken = await clientViaServiceAccount(accCredential, scopes);
 
     return accessToken.credentials.accessToken.data;
   }
@@ -33,10 +32,10 @@ class FCMService {
   }) async {
     String accessToken = await getAccessToken();
 
-    String api =
+    String apiKey =
         "https://fcm.googleapis.com/v1/projects/chat-app-2e7fc/messages:send";
 
-    Map<String, dynamic> myBody = {
+    Map<String, dynamic> apiBody = {
       'message': {
         'token': token,
         'notification': {
@@ -51,24 +50,18 @@ class FCMService {
     };
 
     http.Response res = await http.post(
-      Uri.parse(api),
+      Uri.parse(apiKey),
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer $accessToken',
       },
-      body: jsonEncode(myBody),
+      body: jsonEncode(apiBody),
     );
 
-    log("Status Code : ${res.statusCode}");
     if (res.statusCode == 200) {
-      log("-------------------------------");
-      log("Notification Send Successfully.....");
-      log("Data : ${res.body}.....");
-      log("-------------------------------");
+      log('Notification send successfully--------${res.body}');
     } else {
-      log("-------------------------------");
-      log("Error : ${res.body}");
-      log("-------------------------------");
+      log('${res.body}');
     }
   }
 }

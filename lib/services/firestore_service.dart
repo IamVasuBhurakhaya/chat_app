@@ -4,104 +4,101 @@ import '../model/chat_model.dart';
 import '../model/user_model.dart';
 import 'auth_services.dart';
 
-class FireStoreService {
-  FireStoreService._();
+class FirestoreService {
+  FirestoreService._();
+  static FirestoreService fireStoreService = FirestoreService._();
 
-  static FireStoreService fireStoreService = FireStoreService._();
+  var firestore = FirebaseFirestore.instance;
+  String collectionName = "Users";
+  String chatRoomCollectionName = "Chatroom";
 
-  FirebaseFirestore fireStore = FirebaseFirestore.instance;
-  String userCollection = "Users";
-  String chatRoomCollection = "Chatroom";
-
-  // TODO : To Add Users
-  Future<void> addUser({required UserModel user}) async {
-    await fireStore.collection(userCollection).doc(user.email).set(user.toMap);
+  //Add Users
+  Future<void> addUser({required UserModal modal}) async {
+    await firestore
+        .collection(collectionName)
+        .doc(modal.email)
+        .set(modal.toMap);
   }
 
-  // TODO : Fetch Users
+  //FetchUsers
   Stream<QuerySnapshot<Map<String, dynamic>>> fetchUsers() {
-    String email = AuthService.authService.currentUser?.email ?? "";
-    return fireStore
-        .collection(userCollection)
+    String email = FirebaseAuthService.auth.checkUserStatus?.email ?? '';
+
+    return firestore
+        .collection(collectionName)
         .where("email", isNotEqualTo: email)
         .snapshots();
+    // return firestore.collection(collectionName).snapshots();
   }
 
-  // TODO: Fetch Single User
+  //Fetch Single User
   Future<DocumentSnapshot<Map<String, dynamic>>> fetchSingleUser() async {
-    String email = AuthService.authService.currentUser?.email ?? "";
-    return await fireStore.collection(userCollection).doc(email).get();
+    String email = FirebaseAuthService.auth.checkUserStatus!.email ?? '';
+    return await firestore.collection(collectionName).doc(email).get();
   }
 
-  // Chats Logic
-
-  String createDocId({
-    required String sender,
-    required String receiver,
-  }) {
-    List users = [sender, receiver];
-
-    users.sort();
-
-    String docId = users.join('_');
-
+  String getDocId({required String senderMail, required String receiverMail}) {
+    List user = [senderMail, receiverMail];
+    user.sort();
+    String docId = user.join('_');
     return docId;
   }
 
-  void sentChat({required ChatModal chatModal}) {
+  //Chat Logic
+  void sentChat({required ChatModal modal}) {
     String docId =
-        createDocId(sender: chatModal.sender, receiver: chatModal.receiver);
-
-    fireStore
-        .collection(chatRoomCollection)
+        getDocId(senderMail: modal.sender, receiverMail: modal.receiver);
+    firestore
+        .collection(chatRoomCollectionName)
         .doc(docId)
         .collection('Chats')
-        .add(chatModal.toMap);
+        .add(modal.toMap);
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> fetchChats({
-    required String sender,
-    required String receiver,
-  }) {
-    String docId = createDocId(sender: sender, receiver: receiver);
-
-    return fireStore
-        .collection(chatRoomCollection)
+  //fetch chats
+  Stream<QuerySnapshot<Map<String, dynamic>>> fetchChats(
+      {required String senderMail, required String receiverMail}) {
+    String docId = getDocId(
+      senderMail: senderMail,
+      receiverMail: receiverMail,
+    );
+    return firestore
+        .collection(chatRoomCollectionName)
         .doc(docId)
         .collection('Chats')
         .orderBy('time', descending: false)
         .snapshots();
   }
 
-  void deleteChat({
-    required String sender,
-    required String receiver,
-    required String id,
-  }) {
-    String docId = createDocId(sender: sender, receiver: receiver);
+  //delete chats
+  Future<void> deleteChats(
+      {required String sender, required String receiver, required String id}) {
+    String docId = getDocId(
+      senderMail: sender,
+      receiverMail: receiver,
+    );
 
-    fireStore
-        .collection(chatRoomCollection)
+    return firestore
+        .collection(chatRoomCollectionName)
         .doc(docId)
         .collection('Chats')
         .doc(id)
         .delete();
   }
 
-  void updateChat({
-    required String sender,
-    required String receiver,
-    required String id,
-    required String msg,
-  }) {
-    String docId = createDocId(sender: sender, receiver: receiver);
-    fireStore
-        .collection(chatRoomCollection)
+  //Edit chats
+  Future<void> editChats(
+      {required String sender,
+      required String receiver,
+      required String id,
+      required String msg}) {
+    String docId = getDocId(senderMail: sender, receiverMail: receiver);
+
+    return firestore
+        .collection(chatRoomCollectionName)
         .doc(docId)
         .collection('Chats')
         .doc(id)
-        .update({
-      'msg': msg,
-    });
+        .update({'msg': msg});
   }
 }

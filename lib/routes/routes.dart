@@ -1,11 +1,12 @@
 import 'package:get/get.dart';
+
 import '../views/screens/chats/chat_screen.dart';
 import '../views/screens/home/view/home_screen.dart';
 import '../views/screens/sign_in/view/sign_in_screen.dart';
 import '../views/screens/sign_up/view/sign_up_screen.dart';
 import '../views/screens/splash/view/splash_screen.dart';
 
-class Routes {
+class AppRoutes {
   static String splash = '/';
   static String login = '/login';
   static String register = '/register';
@@ -15,27 +16,23 @@ class Routes {
   static List<GetPage> pages = [
     GetPage(
       name: splash,
-      page: () => const SplashScreen(),
+      page: () => SplashScreen(),
     ),
     GetPage(
       name: login,
-      page: () => const LoginScreen(),
-      transition: Transition.cupertino,
+      page: () => LoginPage(),
     ),
     GetPage(
       name: register,
-      page: () => const RegisterScreen(),
-      transition: Transition.cupertino,
+      page: () => RegisterPage(),
     ),
     GetPage(
       name: home,
-      page: () => const HomeScreen(),
-      transition: Transition.cupertino,
+      page: () => HomePage(),
     ),
     GetPage(
       name: chat,
-      page: () => const ChatPage(),
-      transition: Transition.cupertino,
+      page: () => ChatPage(),
     ),
   ];
 }

@@ -1,7 +1,6 @@
 import 'dart:async';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
 
 import '../../../../routes/routes.dart';
@@ -12,17 +11,49 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Timer(const Duration(seconds: 10), () {
-      log("Current User : ${AuthService.authService.currentUser}");
-      (AuthService.authService.currentUser != null)
-          ? Get.offNamed(Routes.home)
-          : Get.offNamed(Routes.login);
-    });
+    Timer(
+      Duration(seconds: 3),
+      () => FirebaseAuthService.auth.checkUserStatus != null
+          ? Get.offNamed(AppRoutes.home)
+          : Get.offNamed(AppRoutes.login),
+    );
     return Scaffold(
-      backgroundColor: const Color(0xfff2f6fa),
-      body: Center(
-        child: Image.asset(
-          'assets/images/logo.gif',
+      body: Container(
+        height: double.infinity,
+        width: double.infinity,
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color(0XFF1565C0),
+              Color(0XFF0F4888),
+            ],
+            stops: [0, 100],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/splash/splash.png',
+              fit: BoxFit.cover,
+              height: 250.sp,
+              width: 300.sp,
+            ),
+            SizedBox(
+              height: 10.h,
+            ),
+            Text(
+              "E-Chat",
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 48.sp,
+                fontWeight: FontWeight.w900,
+                fontStyle: FontStyle.italic,
+              ),
+            ),
+          ],
         ),
       ),
     );

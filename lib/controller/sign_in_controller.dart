@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:developer';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -11,91 +14,87 @@ import '../services/firestore_service.dart';
 class LoginController extends GetxController {
   RxBool isPassword = true.obs;
 
-  void changeVisibilityPassword() {
+  void changePasswordVisibilty() {
     isPassword.value = !isPassword.value;
   }
 
-  Future<void> loginNewUser({
-    required String email,
-    required String password,
-  }) async {
-    var msg = await AuthService.authService.loginUser(
-      email: email,
-      password: password,
-    );
-
+  //Login user with email&password
+  Future<void> loginUser(
+      {required String email, required String password}) async {
+    String msg = await FirebaseAuthService.auth
+        .loginUser(email: email, password: password);
     if (msg == "Success") {
-      Get.offNamed(Routes.home);
-
+      Get.offNamed(AppRoutes.home);
       toastification.show(
-        title: const Text("Success"),
-        description: const Text(
-          "login success.. 😪",
-        ),
-        autoCloseDuration: const Duration(
-          seconds: 3,
-        ),
+        title: Text("Success"),
+        description: Text("Login successfull"),
+        autoCloseDuration: Duration(seconds: 3),
         type: ToastificationType.success,
-        style: ToastificationStyle.minimal,
       );
     } else {
       toastification.show(
-        title: const Text("LOGIN FAILED"),
-        description: Text(
-          msg,
-        ),
-        autoCloseDuration: const Duration(
-          seconds: 3,
-        ),
+        title: Text("Failed"),
+        description: Text("Login unsuccessfull"),
+        autoCloseDuration: Duration(seconds: 3),
         type: ToastificationType.error,
-        style: ToastificationStyle.minimal,
       );
     }
   }
 
-  Future<void> signInWithGoogle() async {
-    String msg = await AuthService.authService.loginWithGoogle();
-
-    if (msg == "Success") {
-      Get.offNamed(Routes.home);
-
-      var user = AuthService.authService.currentUser;
-
-      if (user != null) {
-        await FireStoreService.fireStoreService.addUser(
-          user: UserModel(
-            uid: user.uid,
-            name: user.displayName ?? "",
-            email: user.email ?? "",
-            password: "",
-            image: user.photoURL ?? "",
-            token: await FirebaseMessaging.instance.getToken() ?? "",
-          ),
-        );
-      }
-
+  //Anonymously Login
+  Future<void> anonymouslyLogin() async {
+    User? user = await FirebaseAuthService.auth.anonymouslyLogin();
+    if (user != null) {
+      Get.offNamed(AppRoutes.home);
       toastification.show(
-        title: const Text("Success"),
-        description: const Text(
-          "login success.. 😪",
-        ),
-        autoCloseDuration: const Duration(
-          seconds: 3,
-        ),
+        title: Text("Success"),
+        description: Text("Login successfull"),
+        autoCloseDuration: Duration(seconds: 3),
         type: ToastificationType.success,
-        style: ToastificationStyle.minimal,
       );
     } else {
       toastification.show(
-        title: const Text("LOGIN FAILED"),
-        description: Text(
-          msg,
-        ),
-        autoCloseDuration: const Duration(
-          seconds: 3,
-        ),
+        title: Text("Failed"),
+        description: Text("Login unsuccessfull"),
+        autoCloseDuration: Duration(seconds: 3),
         type: ToastificationType.error,
-        style: ToastificationStyle.minimal,
+      );
+    }
+  }
+
+  //Google login
+  Future<void> googleLogin() async {
+    String? user = await FirebaseAuthService.auth.googleLogin();
+    if (user == "Success") {
+      Get.offNamed(AppRoutes.home);
+      var userStatus = FirebaseAuthService.auth.checkUserStatus;
+      log("$userStatus");
+
+      if (userStatus != null) {
+        log("${user}");
+        await FirestoreService.fireStoreService.addUser(
+          modal: UserModal(
+            uid: userStatus.uid,
+            name: userStatus.displayName,
+            email: userStatus.email,
+            password: "",
+            image: userStatus.photoURL,
+            token: await FirebaseMessaging.instance.getToken(),
+          ),
+        );
+      }
+      toastification.show(
+        title: Text("Success"),
+        description: Text("Login successfull"),
+        autoCloseDuration: Duration(seconds: 3),
+        type: ToastificationType.success,
+      );
+    } else {
+      toastification.show(
+        title: Text("Failed"),
+        description: Text("Login unsuccessfull"),
+        autoCloseDuration: Duration(seconds: 3),
+        type: ToastificationType.error,
       );
     }
   }
