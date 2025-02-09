@@ -15,16 +15,20 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   late TextEditingController nameController;
+  late TextEditingController statusController;
   late TextEditingController imageController;
   late TextEditingController passwordController;
   User? user = FirebaseAuth.instance.currentUser;
   bool isLoading = false;
   File? _image;
+  File? _wallpaper; // New wallpaper file
 
   @override
   void initState() {
     super.initState();
+
     nameController = TextEditingController();
+    statusController = TextEditingController();
     imageController = TextEditingController();
     passwordController = TextEditingController();
     _loadUserData();
@@ -42,6 +46,8 @@ class _SettingsPageState extends State<SettingsPage> {
       var data = snapshot.data()!;
       setState(() {
         nameController.text = data['name'] ?? '';
+        statusController.text =
+            data['status'] ?? 'Hey there! I am using WhatsApp';
         imageController.text = data['image'] ?? '';
       });
     }
@@ -59,6 +65,7 @@ class _SettingsPageState extends State<SettingsPage> {
         .doc(user!.email)
         .update({
       'name': nameController.text,
+      'status': statusController.text,
       'image': imageController.text,
     });
 
@@ -92,117 +99,195 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  // Function to pick wallpaper
+  Future<void> _pickWallpaper() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _wallpaper = File(pickedFile.path);
+      });
+
+      // Upload wallpaper to Firestore
+      await FirebaseFirestore.instance
+          .collection('Users')
+          .doc(user!.email)
+          .update({'wallpaper': pickedFile.path});
+
+      Get.snackbar("Success", "Wallpaper updated!",
+          snackPosition: SnackPosition.BOTTOM);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.grey[200],
       appBar: AppBar(
         title: const Text("Settings"),
-        backgroundColor: Colors.teal,
-        elevation: 0,
+        backgroundColor: Colors.green[700],
       ),
       body: isLoading
           ? const Center(child: CircularProgressIndicator())
           : ListView(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
               children: [
                 // Profile Section
                 Container(
                   padding: const EdgeInsets.all(16),
                   decoration: BoxDecoration(
-                    color: Colors.teal.shade100,
+                    color: Colors.white,
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Column(
+                  child: Row(
                     children: [
-                      Stack(
-                        alignment: Alignment.bottomRight,
-                        children: [
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundImage: _image != null
-                                ? FileImage(_image!)
-                                : NetworkImage(imageController.text.isEmpty
-                                    ? "https://via.placeholder.com/150"
-                                    : imageController.text) as ImageProvider,
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.camera_alt,
-                                color: Colors.white),
-                            onPressed: _pickImage,
-                          ),
-                        ],
+                      GestureDetector(
+                        onTap: _pickImage,
+                        child: CircleAvatar(
+                          radius: 40,
+                          backgroundImage: _image != null
+                              ? FileImage(_image!)
+                              : NetworkImage(imageController.text.isEmpty
+                                  ? "https://via.placeholder.com/150"
+                                  : imageController.text) as ImageProvider,
+                        ),
                       ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: nameController,
-                        decoration:
-                            const InputDecoration(labelText: "Username"),
+                      const SizedBox(width: 20),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            TextField(
+                              controller: nameController,
+                              style: const TextStyle(
+                                  fontSize: 18, fontWeight: FontWeight.bold),
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "Your Name",
+                              ),
+                            ),
+                            TextField(
+                              controller: statusController,
+                              style: const TextStyle(
+                                  color: Colors.grey, fontSize: 14),
+                              decoration: const InputDecoration(
+                                border: InputBorder.none,
+                                hintText: "Hey there! I am using WhatsApp",
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: imageController,
-                        decoration: const InputDecoration(
-                            labelText: "Profile Image URL"),
-                      ),
-                      const SizedBox(height: 20),
-                      ElevatedButton.icon(
+                      IconButton(
+                        icon: const Icon(Icons.edit, color: Colors.green),
                         onPressed: _updateUserData,
-                        icon: const Icon(Icons.save),
-                        label: const Text("Save Changes"),
                       ),
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 20),
 
                 // Password Change Section
-                Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
-                    color: Colors.grey.shade200,
-                    borderRadius: BorderRadius.circular(10),
+                _settingsSection("Change Password", [
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.lock, color: Colors.green),
+                        const SizedBox(width: 10),
+                        Expanded(
+                          child: TextField(
+                            controller: passwordController,
+                            obscureText: true,
+                            decoration: const InputDecoration(
+                              border: InputBorder.none,
+                              hintText: "Enter new password",
+                            ),
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.save, color: Colors.green),
+                          onPressed: _updatePassword,
+                        ),
+                      ],
+                    ),
                   ),
-                  child: Column(
-                    children: [
-                      const Text("Change Password",
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold)),
-                      const SizedBox(height: 10),
-                      TextFormField(
-                        controller: passwordController,
-                        obscureText: true,
-                        decoration:
-                            const InputDecoration(labelText: "New Password"),
-                      ),
-                      const SizedBox(height: 10),
-                      ElevatedButton.icon(
-                        onPressed: _updatePassword,
-                        icon: const Icon(Icons.lock_reset),
-                        label: const Text("Update Password"),
-                      ),
-                    ],
-                  ),
-                ),
+                ]),
 
                 const SizedBox(height: 20),
 
-                // Logout Section
-                _logoutTile(context),
+                // Chats Section with Wallpaper
+                _settingsSection("Chats", [
+                  _settingsTile(Icons.chat, "Chat backup", () {}),
+                  _settingsTile(
+                      Icons.wallpaper, "Chat wallpaper", _pickWallpaper),
+                  if (_wallpaper != null)
+                    Padding(
+                      padding: const EdgeInsets.all(10),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(10),
+                        child: Image.file(_wallpaper!,
+                            height: 150, fit: BoxFit.cover),
+                      ),
+                    ),
+                ]),
+
+                // Notifications Section
+                _settingsSection("Notifications", [
+                  _settingsTile(
+                      Icons.notifications, "Message notifications", () {}),
+                  _settingsTile(Icons.volume_up, "Call notifications", () {}),
+                ]),
+
+                // Logout Button
+                const SizedBox(height: 20),
+                ListTile(
+                  tileColor: Colors.white,
+                  leading: const Icon(Icons.logout, color: Colors.red),
+                  title: const Text("Logout",
+                      style: TextStyle(color: Colors.red, fontSize: 16)),
+                  onTap: () async {
+                    await FirebaseAuth.instance.signOut();
+                    Get.offAllNamed(AppRoutes.login);
+                  },
+                ),
               ],
             ),
     );
   }
 
-  Widget _logoutTile(BuildContext context) {
+  Widget _settingsSection(String title, List<Widget> children) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+          child: Text(title,
+              style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.grey)),
+        ),
+        Container(
+          decoration: BoxDecoration(
+              color: Colors.white, borderRadius: BorderRadius.circular(10)),
+          child: Column(children: children),
+        ),
+        const SizedBox(height: 20),
+      ],
+    );
+  }
+
+  Widget _settingsTile(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
-      leading: const Icon(Icons.logout, color: Colors.red),
-      title: const Text("Logout",
-          style: TextStyle(fontSize: 16, color: Colors.red)),
-      onTap: () async {
-        await FirebaseAuth.instance.signOut();
-        Get.offAllNamed(AppRoutes.login); // Clears all previous routes
-      },
+      leading: Icon(icon, color: Colors.green[700]),
+      title: Text(title, style: const TextStyle(fontSize: 16)),
+      onTap: onTap,
     );
   }
 }
