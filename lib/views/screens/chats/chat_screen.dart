@@ -1,10 +1,8 @@
+import 'package:chat_app/controller/home_controller.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/scheduler.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
-
-import '../../../controller/home_controller.dart';
 import '../../../model/chat_model.dart';
 import '../../../model/user_model.dart';
 import '../../../services/auth_services.dart';
@@ -25,6 +23,7 @@ class _ChatPageState extends State<ChatPage> {
     TextEditingController msgController = TextEditingController();
     TextEditingController editMsgController = TextEditingController();
     HomeController controller = Get.put(HomeController());
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.all(14.0),
@@ -62,14 +61,14 @@ class _ChatPageState extends State<ChatPage> {
                     ),
                   ],
                 ),
-                Spacer(),
-                Icon(Icons.video_call_rounded),
+                const Spacer(),
+                const Icon(Icons.video_call_rounded),
                 SizedBox(width: 12.w),
-                Icon(Icons.call),
+                const Icon(Icons.call),
                 SizedBox(width: 6.w),
               ],
             ),
-            Divider(),
+            const Divider(),
             Expanded(
               child: StreamBuilder(
                 stream: FirestoreService.fireStoreService.fetchChats(
@@ -100,20 +99,23 @@ class _ChatPageState extends State<ChatPage> {
                             (time.day == DateTime.now().day &&
                                     time.month == DateTime.now().month &&
                                     time.year == DateTime.now().year)
-                                ? Text("Today")
+                                ? const Text("Today")
                                 : (time.day ==
                                             DateTime.now()
-                                                .subtract(Duration(days: 1))
+                                                .subtract(
+                                                    const Duration(days: 1))
                                                 .day &&
                                         time.month ==
                                             DateTime.now()
-                                                .subtract(Duration(days: 1))
+                                                .subtract(
+                                                    const Duration(days: 1))
                                                 .month &&
                                         time.year ==
                                             DateTime.now()
-                                                .subtract(Duration(days: 1))
+                                                .subtract(
+                                                    const Duration(days: 1))
                                                 .year)
-                                    ? Text("Yesterday")
+                                    ? const Text("Yesterday")
                                     : Text(
                                         "${time.day}:${time.month}:${time.year}"),
                             (allChatData[index].receiver == user.email)
@@ -150,8 +152,9 @@ class _ChatPageState extends State<ChatPage> {
                                                       );
                                                       Get.back();
                                                     },
-                                                    label: Text("Delete"),
-                                                    icon: Icon(Icons.delete),
+                                                    label: const Text("Delete"),
+                                                    icon: const Icon(
+                                                        Icons.delete),
                                                   ),
                                                   Visibility(
                                                     visible: (DateTime.now()
@@ -159,7 +162,7 @@ class _ChatPageState extends State<ChatPage> {
                                                             .inMinutes <=
                                                         10),
                                                     child: ElevatedButton.icon(
-                                                      label: Text("Edit"),
+                                                      label: const Text("Edit"),
                                                       onPressed: () {
                                                         editMsgController.text =
                                                             allChatData[index]
@@ -172,10 +175,10 @@ class _ChatPageState extends State<ChatPage> {
                                                             alignment: Alignment
                                                                 .center,
                                                             padding:
-                                                                EdgeInsets.all(
-                                                                    16),
+                                                                const EdgeInsets
+                                                                    .all(16),
                                                             decoration:
-                                                                BoxDecoration(
+                                                                const BoxDecoration(
                                                               color:
                                                                   Colors.white,
                                                               borderRadius:
@@ -200,7 +203,7 @@ class _ChatPageState extends State<ChatPage> {
                                                                         0.4),
                                                                 filled: true,
                                                                 border:
-                                                                    OutlineInputBorder(
+                                                                    const OutlineInputBorder(
                                                                   borderSide:
                                                                       BorderSide(
                                                                           color:
@@ -227,7 +230,7 @@ class _ChatPageState extends State<ChatPage> {
                                                                     }
                                                                     Get.back();
                                                                   },
-                                                                  icon: Icon(
+                                                                  icon: const Icon(
                                                                       Icons
                                                                           .send),
                                                                 ),
@@ -236,7 +239,8 @@ class _ChatPageState extends State<ChatPage> {
                                                           ),
                                                         );
                                                       },
-                                                      icon: Icon(Icons.edit),
+                                                      icon: const Icon(
+                                                          Icons.edit),
                                                     ),
                                                   ),
                                                 ],
@@ -257,15 +261,16 @@ class _ChatPageState extends State<ChatPage> {
                                                     255, 160, 219, 246),
                                                 border: Border.all(
                                                     color: Colors.lightBlue),
-                                                borderRadius: BorderRadius.only(
+                                                borderRadius:
+                                                    const BorderRadius.only(
                                                   topLeft: Radius.circular(22),
                                                   topRight: Radius.circular(24),
                                                   bottomLeft:
                                                       Radius.circular(22),
                                                 ),
                                               ),
-                                              padding: EdgeInsets.all(8),
-                                              margin: EdgeInsets.all(4),
+                                              padding: const EdgeInsets.all(8),
+                                              margin: const EdgeInsets.all(4),
                                               child: Column(
                                                 crossAxisAlignment:
                                                     CrossAxisAlignment.end,
@@ -311,14 +316,15 @@ class _ChatPageState extends State<ChatPage> {
                                                 255, 147, 233, 150),
                                             border:
                                                 Border.all(color: Colors.green),
-                                            borderRadius: BorderRadius.only(
+                                            borderRadius:
+                                                const BorderRadius.only(
                                               topLeft: Radius.circular(30),
                                               topRight: Radius.circular(30),
                                               bottomRight: Radius.circular(30),
                                             ),
                                           ),
-                                          padding: EdgeInsets.all(8),
-                                          margin: EdgeInsets.all(4),
+                                          padding: const EdgeInsets.all(8),
+                                          margin: const EdgeInsets.all(4),
                                           child: Column(
                                             crossAxisAlignment:
                                                 CrossAxisAlignment.end,
@@ -363,7 +369,7 @@ class _ChatPageState extends State<ChatPage> {
                   borderRadius: BorderRadius.circular(28),
                 ),
                 hintText: "Write Something...",
-                hintStyle: TextStyle(color: Colors.grey),
+                hintStyle: const TextStyle(color: Colors.grey),
                 suffixIcon: IconButton(
                   onPressed: () async {
                     String msg = msgController.text;
@@ -384,29 +390,10 @@ class _ChatPageState extends State<ChatPage> {
                           body: msg,
                           token: user.token!);
 
-                      // await NotificationService.localNortification
-                      //     .showSimpleNotification(
-                      //         id: user.name ?? '', body: msg);
-
                       msgController.clear();
-
-                      // await NotificationService.localNortification
-                      //     .scheduledNotification(
-                      //   title: user.name ?? '',
-                      //   body: msg,
-                      //   scheduledDate: DateTime.now().add(
-                      //     Duration(seconds: 2),
-                      //   ),
-                      // );
-
-                      // await NotificationService.localNortification
-                      //     .bigPictureNotification(
-                      //         title: user.name ?? '',
-                      //         body: msg,
-                      //         url: user.image!);
                     }
                   },
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.send,
                   ),
                 ),
@@ -425,24 +412,6 @@ class _ChatPageState extends State<ChatPage> {
 
                   FCMService.fcmService.sendFCM(
                       title: user.name ?? '', body: value, token: user.token!);
-
-                  // await NotificationService.localNortification
-                  //     .showSimpleNotification(id: user.name ?? '', body: value);
-
-                  // await NotificationService.localNortification
-                  //     .scheduledNotification(
-                  //   title: user.name ?? '',
-                  //   body: "This is scheduled notification",
-                  //   scheduledDate: DateTime.now().add(
-                  //     Duration(seconds: 2),
-                  //   ),
-                  // );
-
-                  // await NotificationService.localNortification
-                  //     .bigPictureNotification(
-                  //         title: user.name ?? '',
-                  //         body: value,
-                  //         url: user.image!);
                 }
                 msgController.clear();
               },

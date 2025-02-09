@@ -1,3 +1,4 @@
+import 'package:chat_app/views/screens/settings/settings.dart';
 import 'package:get/get.dart';
 
 import '../views/screens/chats/chat_screen.dart';
@@ -12,6 +13,8 @@ class AppRoutes {
   static String register = '/register';
   static String home = '/home';
   static String chat = '/chat';
+  static String userList = '/userList';
+  static String setting = '/setting';
 
   static List<GetPage> pages = [
     GetPage(
@@ -33,6 +36,10 @@ class AppRoutes {
     GetPage(
       name: chat,
       page: () => ChatPage(),
+    ),
+    GetPage(
+      name: setting,
+      page: () => SettingsPage(),
     ),
   ];
 }

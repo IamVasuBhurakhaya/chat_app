@@ -70,6 +70,21 @@ class FirestoreService {
         .snapshots();
   }
 
+  Stream<QuerySnapshot<Map<String, dynamic>>> fetchLastMessage({
+    required String senderMail,
+    required String receiverMail,
+  }) {
+    String docId = getDocId(senderMail: senderMail, receiverMail: receiverMail);
+
+    return firestore
+        .collection(chatRoomCollectionName)
+        .doc(docId)
+        .collection('Chats')
+        .orderBy('time', descending: true)
+        .limit(1)
+        .snapshots();
+  }
+
   //delete chats
   Future<void> deleteChats(
       {required String sender, required String receiver, required String id}) {
