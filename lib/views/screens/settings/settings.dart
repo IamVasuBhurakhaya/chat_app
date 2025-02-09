@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get/get.dart';
-import '../../../model/user_model.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -18,6 +19,7 @@ class _SettingsPageState extends State<SettingsPage> {
   late TextEditingController passwordController;
   User? user = FirebaseAuth.instance.currentUser;
   bool isLoading = false;
+  File? _image;
 
   @override
   void initState() {
@@ -80,6 +82,16 @@ class _SettingsPageState extends State<SettingsPage> {
     }
   }
 
+  Future<void> _pickImage() async {
+    final pickedFile =
+        await ImagePicker().pickImage(source: ImageSource.gallery);
+    if (pickedFile != null) {
+      setState(() {
+        _image = File(pickedFile.path);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -102,12 +114,23 @@ class _SettingsPageState extends State<SettingsPage> {
                   ),
                   child: Column(
                     children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage: NetworkImage(
-                            imageController.text.isEmpty
-                                ? "https://via.placeholder.com/150"
-                                : imageController.text),
+                      Stack(
+                        alignment: Alignment.bottomRight,
+                        children: [
+                          CircleAvatar(
+                            radius: 50,
+                            backgroundImage: _image != null
+                                ? FileImage(_image!)
+                                : NetworkImage(imageController.text.isEmpty
+                                    ? "https://via.placeholder.com/150"
+                                    : imageController.text) as ImageProvider,
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.camera_alt,
+                                color: Colors.white),
+                            onPressed: _pickImage,
+                          ),
+                        ],
                       ),
                       const SizedBox(height: 10),
                       TextFormField(
