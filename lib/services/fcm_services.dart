@@ -61,7 +61,7 @@ class FCMService {
     if (res.statusCode == 200) {
       log('Notification send successfully--------${res.body}');
     } else {
-      log('${res.body}');
+      log('------------------------------------=================###################${res.body}');
     }
   }
 }
