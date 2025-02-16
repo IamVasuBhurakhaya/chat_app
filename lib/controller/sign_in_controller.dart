@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:developer';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
@@ -9,70 +8,65 @@ import 'package:toastification/toastification.dart';
 import '../model/user_model.dart';
 import '../routes/routes.dart';
 import '../services/auth_services.dart';
-import '../services/firestore_service.dart';
+import '../services/fireStore_service.dart';
 
-class LoginController extends GetxController {
+class SignInController extends GetxController {
   RxBool isPassword = true.obs;
 
-  void changePasswordVisibilty() {
+  void hidePassword() {
     isPassword.value = !isPassword.value;
   }
 
-  //Login user with email&password
-  Future<void> loginUser(
+  Future<void> signInUser(
       {required String email, required String password}) async {
     String msg = await FirebaseAuthService.auth
-        .loginUser(email: email, password: password);
+        .signInUsers(email: email, password: password);
     if (msg == "Success") {
       Get.offNamed(AppRoutes.home);
       toastification.show(
-        title: Text("Success"),
-        description: Text("Login successfull"),
-        autoCloseDuration: Duration(seconds: 3),
+        title: const Text("Success"),
+        description: const Text("SignIn successful"),
+        autoCloseDuration: const Duration(seconds: 3),
         type: ToastificationType.success,
       );
     } else {
       toastification.show(
-        title: Text("Failed"),
-        description: Text("Login unsuccessfull"),
-        autoCloseDuration: Duration(seconds: 3),
+        title: const Text("Failed"),
+        description: const Text("SignIn un-successful"),
+        autoCloseDuration: const Duration(seconds: 3),
         type: ToastificationType.error,
       );
     }
   }
 
-  //Anonymously Login
-  Future<void> anonymouslyLogin() async {
-    User? user = await FirebaseAuthService.auth.anonymouslyLogin();
+  Future<void> signInAnonymous() async {
+    User? user = await FirebaseAuthService.auth.signInAnonymous();
     if (user != null) {
       Get.offNamed(AppRoutes.home);
       toastification.show(
-        title: Text("Success"),
-        description: Text("Login successfull"),
-        autoCloseDuration: Duration(seconds: 3),
+        title: const Text("Success"),
+        description: const Text("SignIn successful"),
+        autoCloseDuration: const Duration(seconds: 3),
         type: ToastificationType.success,
       );
     } else {
       toastification.show(
-        title: Text("Failed"),
-        description: Text("Login unsuccessfull"),
-        autoCloseDuration: Duration(seconds: 3),
+        title: const Text("Failed"),
+        description: const Text("SignIn un-successful"),
+        autoCloseDuration: const Duration(seconds: 3),
         type: ToastificationType.error,
       );
     }
   }
 
-  //Google login
-  Future<void> googleLogin() async {
-    String? user = await FirebaseAuthService.auth.googleLogin();
+  Future<void> signInGoogle() async {
+    String? user = await FirebaseAuthService.auth.signInGoogle();
     if (user == "Success") {
       Get.offNamed(AppRoutes.home);
-      var userStatus = FirebaseAuthService.auth.checkUserStatus;
-      log("$userStatus");
+      var userStatus = FirebaseAuthService.auth.statusUser;
 
       if (userStatus != null) {
-        log("${user}");
-        await FirestoreService.fireStoreService.addUser(
+        await FireStoreService.fireStoreService.addUsers(
           modal: UserModal(
             uid: userStatus.uid,
             name: userStatus.displayName,
@@ -84,16 +78,16 @@ class LoginController extends GetxController {
         );
       }
       toastification.show(
-        title: Text("Success"),
-        description: Text("Login successfull"),
-        autoCloseDuration: Duration(seconds: 3),
+        title: const Text("Success"),
+        description: const Text("SignIn successful"),
+        autoCloseDuration: const Duration(seconds: 3),
         type: ToastificationType.success,
       );
     } else {
       toastification.show(
-        title: Text("Failed"),
-        description: Text("Login unsuccessfull"),
-        autoCloseDuration: Duration(seconds: 3),
+        title: const Text("Failed"),
+        description: const Text("SignIn un-successful"),
+        autoCloseDuration: const Duration(seconds: 3),
         type: ToastificationType.error,
       );
     }

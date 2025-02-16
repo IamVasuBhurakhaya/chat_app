@@ -7,27 +7,27 @@ import 'package:toastification/toastification.dart';
 
 import '../model/user_model.dart';
 import '../services/auth_services.dart';
-import '../services/firestore_service.dart';
+import '../services/fireStore_service.dart';
 
-class RegisterController extends GetxController {
+class SignUpController extends GetxController {
   File? image;
   RxBool isPassword = true.obs;
-  RxBool isConfirmPassword = true.obs;
+  RxBool isCPassword = true.obs;
 
-  void changePasswordVisibilty() {
+  void hidePassword() {
     isPassword.value = !isPassword.value;
   }
 
-  void changeConfirmPasswordVisibilty() {
-    isConfirmPassword.value = !isConfirmPassword.value;
+  void hideCPassword() {
+    isCPassword.value = !isCPassword.value;
   }
 
-  Future<void> register(
+  Future<void> signUp(
       {required String email,
       required String password,
       required String image,
       required String userName}) async {
-    String? msg = await FirebaseAuthService.auth.creatUser(
+    String? msg = await FirebaseAuthService.auth.createUsers(
       email: email,
       password: password,
     );
@@ -35,9 +35,9 @@ class RegisterController extends GetxController {
     if (msg == "Success") {
       Get.back();
 
-      FirestoreService.fireStoreService.addUser(
+      FireStoreService.fireStoreService.addUsers(
         modal: UserModal(
-          uid: FirebaseAuthService.auth.checkUserStatus?.uid ?? '',
+          uid: FirebaseAuthService.auth.statusUser?.uid ?? '',
           name: userName,
           email: email,
           password: password,
@@ -47,24 +47,24 @@ class RegisterController extends GetxController {
       );
 
       toastification.show(
-        title: Text("Success"),
-        autoCloseDuration: Duration(seconds: 3),
-        description: Text("You register successfully"),
+        title: const Text("Success"),
+        autoCloseDuration: const Duration(seconds: 3),
+        description: const Text("You sign up successfully"),
         type: ToastificationType.success,
       );
 
       Get.back();
     } else {
       toastification.show(
-        title: Text("Failed"),
-        autoCloseDuration: Duration(seconds: 3),
+        title: const Text("Failed"),
+        autoCloseDuration: const Duration(seconds: 3),
         description: Text(msg!),
         type: ToastificationType.error,
       );
     }
   }
 
-  Future<void> pickGalleryImage() async {
+  Future<void> galleryPicker() async {
     ImagePicker picker = ImagePicker();
     XFile? file = await picker.pickImage(source: ImageSource.gallery);
     if (file != null) {
@@ -74,7 +74,7 @@ class RegisterController extends GetxController {
     update();
   }
 
-  Future<void> pickCameraImage() async {
+  Future<void> cameraPicker() async {
     ImagePicker picker = ImagePicker();
     XFile? file = await picker.pickImage(source: ImageSource.camera);
     if (file != null) {

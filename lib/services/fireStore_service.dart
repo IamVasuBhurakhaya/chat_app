@@ -1,41 +1,30 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
-
 import '../model/chat_model.dart';
-
 import '../model/user_model.dart';
 import 'auth_services.dart';
 
-class FirestoreService {
-  FirestoreService._();
-  static FirestoreService fireStoreService = FirestoreService._();
+class FireStoreService {
+  FireStoreService._();
+  static FireStoreService fireStoreService = FireStoreService._();
 
-  var firestore = FirebaseFirestore.instance;
+  var fireStore = FirebaseFirestore.instance;
   String collectionName = "Users";
   String chatRoomCollectionName = "Chatroom";
 
-  //Add Users
-  Future<void> addUser({required UserModal modal}) async {
-    await firestore
+  Future<void> addUsers({required UserModal modal}) async {
+    await fireStore
         .collection(collectionName)
         .doc(modal.email)
         .set(modal.toMap);
   }
 
-  //FetchUsers
   Stream<QuerySnapshot<Map<String, dynamic>>> fetchUsers() {
-    String email = FirebaseAuthService.auth.checkUserStatus?.email ?? '';
+    String email = FirebaseAuthService.auth.statusUser?.email ?? '';
 
-    return firestore
+    return fireStore
         .collection(collectionName)
         .where("email", isNotEqualTo: email)
         .snapshots();
-    // return firestore.collection(collectionName).snapshots();
-  }
-
-  //Fetch Single User
-  Future<DocumentSnapshot<Map<String, dynamic>>> fetchSingleUser() async {
-    String email = FirebaseAuthService.auth.checkUserStatus!.email ?? '';
-    return await firestore.collection(collectionName).doc(email).get();
   }
 
   String getDocId({required String senderMail, required String receiverMail}) {
@@ -45,25 +34,23 @@ class FirestoreService {
     return docId;
   }
 
-  //Chat Logic
   void sentChat({required ChatModal modal}) {
     String docId =
         getDocId(senderMail: modal.sender, receiverMail: modal.receiver);
-    firestore
+    fireStore
         .collection(chatRoomCollectionName)
         .doc(docId)
         .collection('Chats')
         .add(modal.toMap);
   }
 
-  //fetch chats
   Stream<QuerySnapshot<Map<String, dynamic>>> fetchChats(
       {required String senderMail, required String receiverMail}) {
     String docId = getDocId(
       senderMail: senderMail,
       receiverMail: receiverMail,
     );
-    return firestore
+    return fireStore
         .collection(chatRoomCollectionName)
         .doc(docId)
         .collection('Chats')
@@ -71,22 +58,6 @@ class FirestoreService {
         .snapshots();
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> fetchLastMessage({
-    required String senderMail,
-    required String receiverMail,
-  }) {
-    String docId = getDocId(senderMail: senderMail, receiverMail: receiverMail);
-
-    return firestore
-        .collection(chatRoomCollectionName)
-        .doc(docId)
-        .collection('Chats')
-        .orderBy('time', descending: true)
-        .limit(1)
-        .snapshots();
-  }
-
-  //delete chats
   Future<void> deleteChats(
       {required String sender, required String receiver, required String id}) {
     String docId = getDocId(
@@ -94,7 +65,7 @@ class FirestoreService {
       receiverMail: receiver,
     );
 
-    return firestore
+    return fireStore
         .collection(chatRoomCollectionName)
         .doc(docId)
         .collection('Chats')
@@ -102,7 +73,6 @@ class FirestoreService {
         .delete();
   }
 
-  //Edit chats
   Future<void> editChats(
       {required String sender,
       required String receiver,
@@ -110,7 +80,7 @@ class FirestoreService {
       required String msg}) {
     String docId = getDocId(senderMail: sender, receiverMail: receiver);
 
-    return firestore
+    return fireStore
         .collection(chatRoomCollectionName)
         .doc(docId)
         .collection('Chats')

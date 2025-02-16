@@ -1,45 +1,41 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class FirebaseAuthService {
   FirebaseAuthService._();
   static FirebaseAuthService auth = FirebaseAuthService._();
 
-  FirebaseAuth authentication = FirebaseAuth.instance;
+  FirebaseAuth firebaseAuth = FirebaseAuth.instance;
   GoogleSignIn googleSignIn = GoogleSignIn();
 
-  //creating user
-  Future<String?> creatUser(
+  Future<String?> createUsers(
       {required String email, required String password}) async {
-    String msg;
+    String message;
     try {
-      await authentication.createUserWithEmailAndPassword(
+      await firebaseAuth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
 
-      msg = "Success";
+      message = "Success";
     } on FirebaseAuthException catch (e) {
       switch (e.code) {
         case 'operation-not-allowed':
-          msg = 'this service not available';
+          message = 'this service not available';
         case 'week-password':
-          msg = "Your password is too week";
+          message = "Your password is too week";
         default:
-          msg = e.code;
+          message = e.code;
       }
     }
-    return msg;
-    // return userCredential.user;
+    return message;
   }
 
-  //Login user
-  Future<String> loginUser(
+  Future<String> signInUsers(
       {required String email, required String password}) async {
     String msg;
     try {
-      await authentication.signInWithEmailAndPassword(
+      await firebaseAuth.signInWithEmailAndPassword(
           email: email, password: password);
       msg = "Success";
     } on FirebaseAuthException catch (e) {
@@ -55,14 +51,12 @@ class FirebaseAuthService {
     return msg;
   }
 
-  //Anonymously Login
-  Future<User?> anonymouslyLogin() async {
-    UserCredential userCredential = await authentication.signInAnonymously();
+  Future<User?> signInAnonymous() async {
+    UserCredential userCredential = await firebaseAuth.signInAnonymously();
     return userCredential.user;
   }
 
-  //Google Login
-  Future<String> googleLogin() async {
+  Future<String> signInGoogle() async {
     String msg;
 
     try {
@@ -76,11 +70,11 @@ class FirebaseAuthService {
           accessToken: googleAuth.accessToken,
         );
 
-        await authentication.signInWithCredential(credential);
+        await firebaseAuth.signInWithCredential(credential);
 
         msg = "Success";
       } else {
-        msg = "No google Account";
+        msg = "No Google Account Found";
       }
     } on FirebaseAuthException catch (e) {
       msg = e.code;
@@ -89,12 +83,10 @@ class FirebaseAuthService {
     return msg;
   }
 
-  //Check user Login
-  User? get checkUserStatus => authentication.currentUser;
+  User? get statusUser => firebaseAuth.currentUser;
 
-  //Logout
-  Future<void> logoutUser() async {
-    await authentication.signOut();
+  Future<void> signOutUser() async {
+    await firebaseAuth.signOut();
     await googleSignIn.signOut();
   }
 }

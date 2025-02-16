@@ -1,7 +1,7 @@
-import 'package:chat_app/views/screens/settings/settings.dart';
+import 'package:chat_app/views/screens/chat_header/view/chats_header.dart';
+import 'package:chat_app/views/screens/settings/view/settings.dart';
 import 'package:get/get.dart';
-
-import '../views/screens/chats/chat_screen.dart';
+import '../views/screens/chats/view/chat_screen.dart';
 import '../views/screens/home/view/home_screen.dart';
 import '../views/screens/sign_in/view/sign_in_screen.dart';
 import '../views/screens/sign_up/view/sign_up_screen.dart';
@@ -15,31 +15,36 @@ class AppRoutes {
   static String chat = '/chat';
   static String userList = '/userList';
   static String setting = '/setting';
+  static String chatHeader = '/chatHeader';
 
   static List<GetPage> pages = [
     GetPage(
       name: splash,
-      page: () => SplashScreen(),
+      page: () => const SplashScreen(),
     ),
     GetPage(
       name: login,
-      page: () => LoginPage(),
+      page: () => const SignInScreen(),
     ),
     GetPage(
       name: register,
-      page: () => RegisterPage(),
+      page: () => const SignUpScreen(),
     ),
     GetPage(
       name: home,
-      page: () => HomePage(),
+      page: () => const HomeScreen(),
     ),
     GetPage(
       name: chat,
-      page: () => ChatPage(),
+      page: () => const ChatScreen(),
     ),
     GetPage(
       name: setting,
-      page: () => SettingsPage(),
+      page: () => const SettingScreen(),
+    ),
+    GetPage(
+      name: chatHeader,
+      page: () => const ChatsHeader(),
     ),
   ];
 }

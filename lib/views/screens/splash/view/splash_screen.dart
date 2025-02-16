@@ -12,43 +12,38 @@ class SplashScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Timer(
-      Duration(seconds: 3),
-      () => FirebaseAuthService.auth.checkUserStatus != null
+      const Duration(seconds: 4),
+      () => FirebaseAuthService.auth.statusUser != null
           ? Get.offNamed(AppRoutes.home)
           : Get.offNamed(AppRoutes.login),
     );
     return Scaffold(
       body: Container(
+        decoration: BoxDecoration(
+            image: DecorationImage(
+                image: AssetImage(
+                  'assets/images/whatshapp_bg.jpg',
+                ),
+                fit: BoxFit.cover)),
         height: double.infinity,
         width: double.infinity,
-        decoration: BoxDecoration(
-          gradient: LinearGradient(
-            colors: [
-              Color(0XFF1565C0),
-              Color(0XFF0F4888),
-            ],
-            stops: [0, 100],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Image.asset(
-              'assets/splash/splash.png',
+              'assets/images/app_icon.png',
               fit: BoxFit.cover,
-              height: 250.sp,
-              width: 300.sp,
+              height: 200.sp,
+              width: 200.sp,
             ),
             SizedBox(
               height: 10.h,
             ),
             Text(
-              "E-Chat",
+              "Doodle",
               style: TextStyle(
-                color: Colors.white,
-                fontSize: 48.sp,
+                color: const Color(0xFF25D366),
+                fontSize: 46.sp,
                 fontWeight: FontWeight.w900,
                 fontStyle: FontStyle.italic,
               ),

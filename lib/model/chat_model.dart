@@ -10,11 +10,11 @@ class ChatModal {
       required this.receiver,
       required this.time});
 
-  factory ChatModal.fromMap({required Map data}) => ChatModal(
-        msg: data['msg'],
-        sender: data['sender'],
-        receiver: data['receiver'],
-        time: data['time'],
+  factory ChatModal.mapToModel({required Map m1}) => ChatModal(
+        msg: m1['msg'],
+        sender: m1['sender'],
+        receiver: m1['receiver'],
+        time: m1['time'],
       );
 
   Map<String, dynamic> get toMap => {

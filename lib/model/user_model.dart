@@ -1,11 +1,11 @@
 class UserModal {
-  String? uid, name, email, password, image, token;
+  String? uid, password, name, email, image, token;
 
   UserModal({
     required this.uid,
+    required this.password,
     required this.name,
     required this.email,
-    required this.password,
     required this.image,
     required this.token,
   });
@@ -13,9 +13,9 @@ class UserModal {
   factory UserModal.fromMap(Map m1) {
     return UserModal(
       uid: m1['uid'],
+      password: m1['password'],
       name: m1['name'],
       email: m1['email'],
-      password: m1['password'],
       image: m1['image'],
       token: m1['token'],
     );
@@ -23,9 +23,9 @@ class UserModal {
 
   Map<String, dynamic> get toMap => {
         'uid': uid,
+        'password': password,
         'name': name,
         'email': email,
-        'password': password,
         'image': image,
         'token': token,
       };

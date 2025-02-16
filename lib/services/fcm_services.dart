@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter/services.dart';
 import 'package:googleapis_auth/auth_io.dart';
+
 import 'package:http/http.dart' as http;
 
 class FCMService {
@@ -16,7 +17,6 @@ class FCMService {
 
     var accCredential = ServiceAccountCredentials.fromJson(json);
     List<String> scopes = [
-      //from google cloud api
       "https://www.googleapis.com/auth/firebase.messaging",
     ];
 
