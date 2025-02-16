@@ -57,6 +57,28 @@ dependencies:
 ```
 
 ## 📸 Screenshots
+<img src="https://github.com/user-attachments/assets/f3a5b996-da1d-4bed-80d3-3352cb6b0b24" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/c3191212-6166-4895-8f0c-f0fc5bab5b07" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/1b6fa8d0-09fc-4acb-8fa0-0e4948bea8ff" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/c030dadb-6aff-44dd-9d52-9b54b9fc88dc" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/65e4567e-9ec7-49cb-b5c1-c03493620ee1" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/6081755b-fb3d-4579-8d6d-fc3d929a5994" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/7ce254c0-8a80-44c4-bfee-48b9b44b01c6" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/406c746d-cf79-4e33-913b-0f0a75dae7aa" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/1ba29877-b6e1-432f-a72d-edfe841e0867" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/86cc20f0-07de-4c76-80be-a11ec8d2e435" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/709907ab-ab9b-48b0-bdf2-157963ac6ed2" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/0defe3ce-6124-48cc-bce3-07f05f3a50f4" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/ee6bf061-1f2b-46e6-966d-a767762b29cb" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/f8dc40f4-5c18-43ac-bdf4-3c3968827c47" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/6943eb32-e70a-49fc-8a72-9cc625dd782d" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/2ba69c97-fe01-46c9-9ef3-c43d8f0041fc" height=400 width=200>
+<img src="https://github.com/user-attachments/assets/553398c4-905a-40e5-b360-41492fef76b7" height=400 width=200>
+
+
+
+
+
 
 ![Chat Screen](https://via.placeholder.com/500x300)
 ![Profile Page](https://via.placeholder.com/500x300)
@@ -65,8 +87,8 @@ dependencies:
 
 ### 1️⃣ Clone the Repository
 ```sh
-git clone https://github.com/your-username/doodle.git
-cd doodle
+git clone https://github.com/IamVasuBhurakhaya/chat_app.git
+cd chat_app
 ```
 
 ### 2️⃣ Install Dependencies
@@ -92,23 +114,7 @@ flutter run
 4. Enable smart notifications for real-time updates.
 5. Personalize your profile and chat aesthetics.
 
-## 📌 Roadmap
 
-- [ ] Integrate voice messaging
-- [ ] Implement message reactions
-- [ ] Enable chat backup & restore
-- [ ] Introduce custom stickers & GIFs
-- [ ] Optimize performance for extensive chats
-
-## 💡 Contributing
-
-We welcome contributions! Feel free to fork the repository and submit a pull request.
-
-## 🛡️ License
-
-This project is licensed under the **MIT License**. See [LICENSE](LICENSE) for details.
-
-## 📬 Contact
 
 📧 Email: your-email@example.com  
 🐦 Twitter: [@yourhandle](https://twitter.com/yourhandle)
