@@ -77,11 +77,10 @@ dependencies:
 
 
 
+https://github.com/user-attachments/assets/5fab9bdd-88b7-4cb2-be90-cb215e944b71
 
 
 
-![Chat Screen](https://via.placeholder.com/500x300)
-![Profile Page](https://via.placeholder.com/500x300)
 
 ## 📦 Installation & Setup
 
