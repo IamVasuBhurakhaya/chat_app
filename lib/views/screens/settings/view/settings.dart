@@ -22,7 +22,7 @@ class _SettingScreenState extends State<SettingScreen> {
   User? user = FirebaseAuth.instance.currentUser;
   bool isLoading = false;
   File? _image;
-  File? _wallpaper; // New wallpaper file
+  File? _wallpaper; 
 
   @override
   void initState() {
@@ -100,7 +100,6 @@ class _SettingScreenState extends State<SettingScreen> {
     }
   }
 
-  // Function to pick wallpaper
   Future<void> _pickWallpaper() async {
     final pickedFile =
         await ImagePicker().pickImage(source: ImageSource.gallery);
@@ -109,7 +108,6 @@ class _SettingScreenState extends State<SettingScreen> {
         _wallpaper = File(pickedFile.path);
       });
 
-      // Upload wallpaper to Firestore
       await FirebaseFirestore.instance
           .collection('Users')
           .doc(user!.email)
@@ -178,7 +176,6 @@ class _SettingScreenState extends State<SettingScreen> {
                 padding:
                     const EdgeInsets.symmetric(horizontal: 16, vertical: 20),
                 children: [
-                  // Profile Section
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -233,7 +230,6 @@ class _SettingScreenState extends State<SettingScreen> {
                   ),
                   const SizedBox(height: 20),
 
-                  // Password Change Section
                   _settingsSection("Change Password", [
                     Container(
                       padding: const EdgeInsets.symmetric(
@@ -284,7 +280,6 @@ class _SettingScreenState extends State<SettingScreen> {
                       ),
                   ]),
 
-                  // Notifications Section
                   _settingsSection("Notifications", [
                     _settingsTile(Icons.notifications, "Message notifications",
                         () {
@@ -295,7 +290,6 @@ class _SettingScreenState extends State<SettingScreen> {
                     }),
                   ]),
 
-                  // Logout Button
                   const SizedBox(height: 20),
                   ListTile(
                     tileColor: Colors.white,
