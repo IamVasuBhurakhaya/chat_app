@@ -115,8 +115,7 @@ flutter run
 
 
 
-📧 Email: your-email@example.com  
-🐦 Twitter: [@yourhandle](https://twitter.com/yourhandle)
+📧 Email: bhurakhyavasu@gmail.com  
 
 ---
 
